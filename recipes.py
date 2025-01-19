@@ -1,3 +1,4 @@
+import os.path
 from os import system
 from pathlib import Path
 
@@ -21,7 +22,7 @@ def show_main_menu():
     selected_option = input(menu)
     while not selected_option.isnumeric() or int(selected_option) not in range(1, len(menu_options) + 1):
         system("cls")
-        print("Oops! that option does not exist, select another one:\n")
+        print("Oops! Option does not exist, select another one:\n")
         selected_option = input(menu)
 
     return int(selected_option)
@@ -39,6 +40,10 @@ def exec_op1(menu_title):
 
     print(f"* {menu_title}")
     print(f"└── {categories_options[selected_category]}\n")
+
+    if selected_recipe == 0:
+        print("There are no recipes yet.")
+        return
 
     show_recipie(selected_recipe, recipe_paths)
 
@@ -58,7 +63,7 @@ def get_categories():
     selected_category = input(f"Select a category:\n{menu_categories}\n")
     while not selected_category.isnumeric() or int(selected_category) not in range(1, option):
         system("cls")
-        print("Oops! that option does not exist, select another one:\n")
+        print("Oops! Option does not exist, select another one:\n")
         selected_category = input(f"Select a category:\n{menu_categories}\n")
 
     return int(selected_category), categories_options
@@ -66,20 +71,23 @@ def get_categories():
 
 def get_recipies(folder):
     category_dir = Path(recipies_dir, folder)
-    option = 1
+    option = 0
     recipe_paths = {}
     menu_recipies = ""
 
     for recipie in Path(category_dir).glob("*.txt"):
-        rec = Path(recipie).stem
+        rec = recipie.stem
         menu_recipies += f"[{option}] {rec}\n"
         recipe_paths[option] = recipie
         option += 1
 
+    if len(recipe_paths) == 0:
+        return 0, recipe_paths
+
     selected_recipe = input(f"Select a recipe:\n{menu_recipies}")
     while not selected_recipe.isnumeric() or int(selected_recipe) not in range(1, option):
         system("cls")
-        print("Oops! that option does not exist, select another one:\n")
+        print("Oops! Option does not exist, select another one:\n")
         selected_recipe = input(f"Select a recipe:\n{menu_recipies}")
 
     return int(selected_recipe), recipe_paths
@@ -87,10 +95,7 @@ def get_recipies(folder):
 
 def show_recipie(selected_recipe, recipe_paths):
     recipe_path = recipe_paths[selected_recipe]
-    recipe = open(Path(recipe_path))
-    print(f"{Path(recipe_path).stem}:")
-    print(recipe.read())
-    recipe.close()
+    print(Path.read_text(recipe_path))
 
 
 def exec_op2(menu_title):
@@ -104,8 +109,6 @@ def exec_op2(menu_title):
 
 
 def add_recipe(category):
-    category_path = Path(category)
-
     recipe_name = input("Write the title: ")
     while recipe_name == "":
         recipe_name = input("Write the title: ")
@@ -114,13 +117,17 @@ def add_recipe(category):
     while content_recipe == "":
         content_recipe = input("Write the content: ")
 
-    new_recipe_path = Path(recipies_dir, category_path, recipe_name + ".txt")
-    recipe_file = open(new_recipe_path, "w")
-    recipe_file.write(content_recipe)
-    recipe_file.close()
+    new_recipe_path = Path(recipies_dir, category, recipe_name + ".txt")
+    if not os.path.exists(new_recipe_path):
+        recipe_file = open(new_recipe_path, "w")
+        recipe_file.write(content_recipe)
+        recipe_file.close()
 
-    system("cls")
-    print("Recipe created!")
+        system("cls")
+        print("Recipe created!")
+    else:
+        print("\nOops! Recipe already exists, add another one:")
+        add_recipe(category)
 
 
 def exec_op3():
@@ -132,7 +139,11 @@ def add_category():
     while category_title == "":
         category_title = input("Write the title: ")
 
-    Path(recipies_dir, category_title).mkdir(parents=True, exist_ok=True)
+    if not os.path.exists(Path(recipies_dir, category_title)):
+        Path(recipies_dir, category_title).mkdir(parents=True, exist_ok=True)
+    else:
+        print("\nOops! Category already exists, add another one:")
+        add_category()
 
 
 def exec_op4(menu_title):
@@ -147,6 +158,10 @@ def exec_op4(menu_title):
 
     print(f"* {menu_title}")
     print(f"└── {categories_options[selected_category]}\n")
+
+    if selected_recipe == 0:
+        print("There are no recipes yet.")
+        return
 
     delete_recipie(selected_recipe, recipe_paths)
 
