@@ -18,13 +18,13 @@ def show_main_menu():
     for index, op in enumerate(menu_options):
         menu += f"[{index + 1}] {op}\n"
 
-    selected_option = int(input(menu))
-    while selected_option < 1 or selected_option > 6:
+    selected_option = input(menu)
+    while not selected_option.isnumeric() or int(selected_option) not in range(1, len(menu_options) + 1):
         system("cls")
         print("Oops! that option does not exist, select another one:\n")
-        selected_option = int(input(menu))
+        selected_option = input(menu)
 
-    return selected_option
+    return int(selected_option)
 
 
 def exec_op1(menu_title):
@@ -55,13 +55,13 @@ def get_categories():
         categories_options[option] = cat
         option += 1
 
-    selected_category = int(input(f"Select a category:\n{menu_categories}\n"))
-    while selected_category < 1 or selected_category > option - 1:
+    selected_category = input(f"Select a category:\n{menu_categories}\n")
+    while not selected_category.isnumeric() or int(selected_category) not in range(1, option):
         system("cls")
         print("Oops! that option does not exist, select another one:\n")
-        selected_category = int(input(f"Select a category:\n{menu_categories}\n"))
+        selected_category = input(f"Select a category:\n{menu_categories}\n")
 
-    return selected_category, categories_options
+    return int(selected_category), categories_options
 
 
 def get_recipies(folder):
@@ -76,13 +76,13 @@ def get_recipies(folder):
         recipe_paths[option] = recipie
         option += 1
 
-    selected_recipe = int(input(f"Select a recipe:\n{menu_recipies}"))
-    while selected_recipe < 1 or selected_recipe > option - 1:
+    selected_recipe = input(f"Select a recipe:\n{menu_recipies}")
+    while not selected_recipe.isnumeric() or int(selected_recipe) not in range(1, option):
         system("cls")
         print("Oops! that option does not exist, select another one:\n")
-        selected_recipe = int(input(f"Select a recipe:\n{menu_recipies}"))
+        selected_recipe = input(f"Select a recipe:\n{menu_recipies}")
 
-    return selected_recipe, recipe_paths
+    return int(selected_recipe), recipe_paths
 
 
 def show_recipie(selected_recipe, recipe_paths):
